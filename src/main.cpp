@@ -8,6 +8,7 @@ MAX72xxMatrix matrix = MAX72xxMatrix(12, 11, 10, 8); // Data, CS, CLK, Num
 unsigned long delayms = 0;
 
 void setPanelLed(uint8_t panel, uint8_t x, uint8_t y, bool state);
+bool getPanelLed(uint8_t panel, uint8_t x, uint8_t y);
 
 void setup()
 {
@@ -22,7 +23,6 @@ void setup()
 
   for (int addr = 0; addr < devices; addr++)
   {
-
     matrix.setShutdown(addr, false);
     matrix.setIntensity(addr, 1);
     matrix.clearDisplay(addr);
@@ -64,13 +64,13 @@ void loop()
 // p0 p1 p2 p3
 //    p5
 //
-// LED coordinates
-// Transform to
+// LED coordinates:
 // 6 panels with 16x16 LEDs
-// origin (0/0) is lower left
-// each panel consits of 4 8x8 matrices:
-// m2 m3 - 0/0 each bottom left
-// m1 m0 - 0/0 each top right
+// origin (0/0) is lower left on each panel
+// 
+// each panel consits of 4 8x8 matrices daisychained:
+// |-> m2 -> m3 -> data out - 0/0 each bottom left
+// |-- m1 <- m0 <- data in  - 0/0 each top right
 // to physical coordinates
 // p0          p1          p2    .... p5
 // m0 m1 m2 m3 m4 m5 m6 m7 m8 m9 .... m20 m21 m22 m23
@@ -84,17 +84,12 @@ void setPanelLed(uint8_t panel, uint8_t x, uint8_t y, bool state)
   uint8_t mp = 0; // addr of phys matrix
 
   // check borders
-  if (x < 0)
-    x = 0;
+  // all is uint8_t --> no check if below zero needed
   if (x > width)
     x = width;
-  if (y < 0)
-    y = 0;
   if (y > height)
     y = height;
-  if (panel < 0)
-    panel = 0;
-  if (panel > 2) // cupe: 6 panels
+  if (panel > 2) // cube: 6 panels
     panel = 2;
 
   // lower left
@@ -126,8 +121,60 @@ void setPanelLed(uint8_t panel, uint8_t x, uint8_t y, bool state)
     my = y - 8;
   }
   // move all to correct addr in chain
-
   mp = mp + panel * 4;
 
   matrix.setLed(mp, my, mx, state);
 }
+
+bool getPanelLed(uint8_t panel, uint8_t x, uint8_t y)
+{
+  uint8_t width = 16;
+  uint8_t height = 16;
+  
+  uint8_t mx = 0; // column of phys matrix
+  uint8_t my = 0; // row of phys matrix
+  uint8_t mp = 0; // addr of phys matrix
+
+  // check borders
+  // all is uint8_t --> no check if below zero needed
+  if (x > width)
+    x = width;
+  if (y > height)
+    y = height;
+  if (panel > 2) // cube: 6 panels
+    panel = 2;
+
+  // lower left
+  if (x < 8 && y < 8)
+  {
+    mp = 1;
+    mx = 7-x;
+    my = 7-y;
+  }
+  // lower right
+  else if (x < 16 && y < 8)
+  {
+    mp = 0;
+    mx = 7 - (x - 8);
+    my = 7 - y;
+  }
+  // upper left
+  else if (x < 8 && y < 16)
+  {
+    mp = 2;
+    mx = x;
+    my = y - 8;
+  }
+  else
+  // upper right
+  { // (x<16 && y<16)
+    mp = 3;
+    mx = x - 8;
+    my = y - 8;
+  }
+  // move all to correct addr in chain
+  mp = mp + panel * 4;
+
+  return matrix.getLed(mp, my, mx);
+}
+
