@@ -4,8 +4,8 @@
 
 //#define DEBUG
 
-MAX72xxMatrix matrix = MAX72xxMatrix(12, 11, 10, 8); // Data, CS, CLK, Num
-unsigned long delayms = 0;
+MAX72xxMatrix matrix = MAX72xxMatrix(12, 11, 10, 24); // Data, CS, CLK, Num
+unsigned long delayms = 10;
 
 void setPanelLed(uint8_t panel, uint8_t x, uint8_t y, bool state);
 bool getPanelLed(uint8_t panel, uint8_t x, uint8_t y);
@@ -45,10 +45,18 @@ void loop()
     for(uint8_t x=0; x<16; x++) {
       setPanelLed(0,x,y,true);
       setPanelLed(1,y,x,true);
+      setPanelLed(2,15-x,y,true);
+      setPanelLed(3,15-x,15-y,true);
+      setPanelLed(4,x,15-y,true);
+      setPanelLed(5,15-y,x,true);
       matrix.show();
       delay(delayms);
       setPanelLed(0,x,y,false);
       setPanelLed(1,y,x,false);
+      setPanelLed(2,15-x,y,false);
+      setPanelLed(3,15-x,15-y,false);
+      setPanelLed(4,x,15-y,false);
+      setPanelLed(5,15-y,x,false);
       matrix.show();
     }
   }
@@ -89,8 +97,8 @@ void setPanelLed(uint8_t panel, uint8_t x, uint8_t y, bool state)
     x = width;
   if (y > height)
     y = height;
-  if (panel > 2) // cube: 6 panels
-    panel = 2;
+  if (panel > 6) // cube: 6 panels
+    panel = 6;
 
   // lower left
   if (x < 8 && y < 8)
@@ -141,8 +149,8 @@ bool getPanelLed(uint8_t panel, uint8_t x, uint8_t y)
     x = width;
   if (y > height)
     y = height;
-  if (panel > 2) // cube: 6 panels
-    panel = 2;
+  if (panel > 6) // cube: 6 panels
+    panel = 6;
 
   // lower left
   if (x < 8 && y < 8)
