@@ -4,8 +4,8 @@
 
 //#define DEBUG
 
-MAX72xxMatrix matrix = MAX72xxMatrix(12, 11, 10, 24); // Data, CS, CLK, Num
-unsigned long delayms = 10;
+MAX72xxMatrix matrix = MAX72xxMatrix(11, 12, 10, 13, 24); // OUT/MOSI, IN/MISO, CS, SCK, Number of modules
+unsigned long delayms = 0;
 
 void setPanelLed(uint8_t panel, uint8_t x, uint8_t y, bool state);
 bool getPanelLed(uint8_t panel, uint8_t x, uint8_t y);
@@ -60,6 +60,7 @@ void loop()
       matrix.show();
     }
   }
+
 #ifdef DEBUG
   Serial.println(freeMemory());
 #endif

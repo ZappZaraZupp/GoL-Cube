@@ -8,6 +8,7 @@
 #define MAX72xxMatrix_h
 
 #include <Arduino.h>
+#include <SPI.h>
 
 // Register Address Map (D11 - D08)
 
@@ -62,9 +63,10 @@ private:
     uint8_t* spidata;
 
     // connection settings
-    uint8_t SPI_MOSI;
-    uint8_t SPI_CS;
-    uint8_t SPI_CLK;
+    uint8_t SPI_MOSI; //MasterOutSlaveIn
+    uint8_t SPI_MISO; //MasterInSlaveOut
+    uint8_t SPI_CS;   //Select
+    uint8_t SPI_CLK;  //Clock
     uint8_t numDevices=0;
     // led state (8*numDevices)
     uint8_t** ledstate;
@@ -78,7 +80,8 @@ public:
     // csPin		SPI_CS
     // clockPin		SPI_CLK
     // numDevices	chained devices
-    MAX72xxMatrix(uint8_t dataPin, uint8_t csPin, uint8_t clkPin,  uint8_t numDevices = 1);
+    //MAX72xxMatrix(uint8_t dataPin, uint8_t csPin, uint8_t clkPin,  uint8_t numDevices = 1);
+    MAX72xxMatrix(uint8_t mosiPin, uint8_t misoPin, uint8_t csPin, uint8_t clkPin,  uint8_t numDevices = 1);
 
     // ** getNumDevices
     // Returns:

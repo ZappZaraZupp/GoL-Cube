@@ -6,9 +6,10 @@
 
 #include "MAX72xxMatrix.h"
 
-MAX72xxMatrix ::MAX72xxMatrix(uint8_t dataPin, uint8_t csPin, uint8_t clkPin, uint8_t num)
+MAX72xxMatrix ::MAX72xxMatrix(uint8_t mosiPin, uint8_t misoPin, uint8_t csPin, uint8_t clkPin, uint8_t num)
 {
-    SPI_MOSI = dataPin;
+    SPI_MOSI = mosiPin;
+    SPI_MISO = misoPin;
     SPI_CS = csPin;
     SPI_CLK = clkPin;
 
@@ -37,8 +38,12 @@ MAX72xxMatrix ::MAX72xxMatrix(uint8_t dataPin, uint8_t csPin, uint8_t clkPin, ui
     }
 
     pinMode(SPI_MOSI, OUTPUT);
+    pinMode(SPI_MISO, INPUT);
     pinMode(SPI_CS, OUTPUT);
     pinMode(SPI_CLK, OUTPUT);
+
+    SPI.begin();
+    SPI.setClockDivider(SPI_CLOCK_DIV4);
 
     for (uint8_t i = 0; i < numDevices; i++)
     {
@@ -201,7 +206,8 @@ void MAX72xxMatrix ::spiSend(uint8_t addr, volatile uint8_t opcode, volatile uin
     // D11-D8 contain the register address (opcode) --> see header file
     // D7-D0 contain the data values
     for (uint8_t i = datalen; i > 0; i--)
-        shiftOut(SPI_MOSI, SPI_CLK, MSBFIRST, spidata[i - 1]);
+        //shiftOut(SPI_MOSI, SPI_CLK, MSBFIRST, spidata[i - 1]);
+        SPI.transfer(spidata[i-1]);
     // The data is then latched into either the digit or
     // control registers on the rising edge of CS
     digitalWrite(SPI_CS, HIGH);
@@ -229,7 +235,8 @@ void MAX72xxMatrix ::show()
         digitalWrite(SPI_CS, LOW);
         for (uint8_t i = datalen; i > 0; i--)
         {
-            shiftOut(SPI_MOSI, SPI_CLK, MSBFIRST, spidata[i - 1]);
+            SPI.transfer(spidata[i-1]);
+            //shiftOut(SPI_MOSI, SPI_CLK, MSBFIRST, spidata[i - 1]);
         }
         digitalWrite(SPI_CS, HIGH);
     }
