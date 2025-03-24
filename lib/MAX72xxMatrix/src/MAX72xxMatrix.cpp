@@ -43,7 +43,7 @@ MAX72xxMatrix ::MAX72xxMatrix(uint8_t mosiPin, uint8_t misoPin, uint8_t csPin, u
     pinMode(SPI_CLK, OUTPUT);
 
     SPI.begin();
-    SPI.setClockDivider(SPI_CLOCK_DIV4);
+    SPI.setClockDivider(SPI_CLOCK_DIV16);
 
     for (uint8_t i = 0; i < numDevices; i++)
     {
