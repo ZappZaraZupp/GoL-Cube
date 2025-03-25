@@ -1,12 +1,12 @@
 /*
-    MAX72xxMatrix
+    MAX72xxSPI
     Control chained 72xx
     02 2025 C. Pohl
  */
 
-#include "MAX72xxMatrix.h"
+#include "MAX72xxSPI.h"
 
-MAX72xxMatrix ::MAX72xxMatrix(uint8_t mosiPin, uint8_t misoPin, uint8_t csPin, uint8_t clkPin, uint8_t num)
+MAX72xxSPI ::MAX72xxSPI(uint8_t mosiPin, uint8_t misoPin, uint8_t csPin, uint8_t clkPin, uint8_t num)
 {
     SPI_MOSI = mosiPin;
     SPI_MISO = misoPin;
@@ -60,12 +60,12 @@ MAX72xxMatrix ::MAX72xxMatrix(uint8_t mosiPin, uint8_t misoPin, uint8_t csPin, u
     }
 }
 
-uint8_t MAX72xxMatrix ::getNumDevices()
+uint8_t MAX72xxSPI ::getNumDevices()
 {
     return numDevices;
 }
 
-void MAX72xxMatrix ::setShutdown(uint8_t addr, bool b)
+void MAX72xxSPI ::setShutdown(uint8_t addr, bool b)
 {
     // check boundaries
     if (addr < 0 || addr > numDevices)
@@ -77,7 +77,7 @@ void MAX72xxMatrix ::setShutdown(uint8_t addr, bool b)
         spiSend(addr, SHUTDOWN, 0x01);
 }
 
-void MAX72xxMatrix ::setDecode(uint8_t addr, uint8_t val)
+void MAX72xxSPI ::setDecode(uint8_t addr, uint8_t val)
 {
     // check boundaries
     if (addr < 0 || addr > numDevices)
@@ -87,7 +87,7 @@ void MAX72xxMatrix ::setDecode(uint8_t addr, uint8_t val)
         spiSend(addr, DECODEMODE, val);
 }
 
-void MAX72xxMatrix ::setTest(uint8_t addr, bool b)
+void MAX72xxSPI ::setTest(uint8_t addr, bool b)
 {
     // check boundaries
     if (addr < 0 || addr >= numDevices)
@@ -99,7 +99,7 @@ void MAX72xxMatrix ::setTest(uint8_t addr, bool b)
         spiSend(addr, DISPLAYTEST, 0x00);
 }
 
-void MAX72xxMatrix ::setScanLimit(uint8_t addr, uint8_t limit)
+void MAX72xxSPI ::setScanLimit(uint8_t addr, uint8_t limit)
 {
     // check boundaries
     if (addr < 0 || addr > numDevices)
@@ -109,7 +109,7 @@ void MAX72xxMatrix ::setScanLimit(uint8_t addr, uint8_t limit)
         spiSend(addr, SCANLIMIT, limit);
 }
 
-void MAX72xxMatrix ::setIntensity(uint8_t addr, uint8_t intensity)
+void MAX72xxSPI ::setIntensity(uint8_t addr, uint8_t intensity)
 {
     // check boundaries
     if (addr < 0 || addr > numDevices)
@@ -119,7 +119,7 @@ void MAX72xxMatrix ::setIntensity(uint8_t addr, uint8_t intensity)
         spiSend(addr, INTENSITY, intensity);
 }
 
-void MAX72xxMatrix ::clearDisplay(uint8_t addr)
+void MAX72xxSPI ::clearDisplay(uint8_t addr)
 {
     // check boundaries
     if (addr < 0 || addr > numDevices)
@@ -131,7 +131,7 @@ void MAX72xxMatrix ::clearDisplay(uint8_t addr)
     }
 }
 
-void MAX72xxMatrix ::setRow(uint8_t addr, uint8_t row, uint8_t value)
+void MAX72xxSPI ::setRow(uint8_t addr, uint8_t row, uint8_t value)
 {
     // check boundaries
     if (addr < 0 || addr > numDevices)
@@ -146,7 +146,7 @@ void MAX72xxMatrix ::setRow(uint8_t addr, uint8_t row, uint8_t value)
     // spiSend(addr, row + 1, ledstate[addr][row]);
 }
 
-void MAX72xxMatrix ::setLed(uint8_t addr, uint8_t row, uint8_t col, boolean state)
+void MAX72xxSPI ::setLed(uint8_t addr, uint8_t row, uint8_t col, boolean state)
 {
     uint8_t tmpval = 0;
 
@@ -171,7 +171,7 @@ void MAX72xxMatrix ::setLed(uint8_t addr, uint8_t row, uint8_t col, boolean stat
     }
 }
 
-boolean MAX72xxMatrix ::getLed(uint8_t addr, uint8_t row, uint8_t col)
+boolean MAX72xxSPI ::getLed(uint8_t addr, uint8_t row, uint8_t col)
 {
     uint8_t tmpval = 0;
     // check boundaries
@@ -187,7 +187,7 @@ boolean MAX72xxMatrix ::getLed(uint8_t addr, uint8_t row, uint8_t col)
 }
 
 // send *one* data packet (opcode and value) to addr
-void MAX72xxMatrix ::spiSend(uint8_t addr, volatile uint8_t opcode, volatile uint8_t data)
+void MAX72xxSPI ::spiSend(uint8_t addr, volatile uint8_t opcode, volatile uint8_t data)
 {
     // Create an array with the data to shift out
     // each datapacket is 16 bit (8bit opcode 8bit data)
@@ -214,7 +214,7 @@ void MAX72xxMatrix ::spiSend(uint8_t addr, volatile uint8_t opcode, volatile uin
 }
 
 // send and show stored ledstate[][]
-void MAX72xxMatrix ::show()
+void MAX72xxSPI ::show()
 {
     // go through ledstate array
     // build spidata array

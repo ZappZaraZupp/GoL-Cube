@@ -1,14 +1,26 @@
-#include <Arduino.h>
-#include "MAX72xxMatrix.h"
-#include "MemoryFree.h"
+#include <GoLCube.h>
 
 #define DEBUG
 
-MAX72xxMatrix matrix = MAX72xxMatrix(11, 12, 10, 13, 24); // OUT/MOSI, IN/MISO, CS, SCK, Number of modules
+MAX72xxSPI matrix = MAX72xxSPI(11, 12, 10, 13, 4); // OUT/MOSI, IN/MISO, CS, SCK, Number of modules
 unsigned long delayms = 1000;
 
 uint8_t **nextState;
 uint8_t newRound = 0;
+
+struct CubeCoordinates
+{
+  uint8_t panel;
+  uint8_t x;
+  uint8_t y;
+};
+struct ModuleCoordinates {
+  uint8_t addr;
+  uint8_t row;
+  uint8_t column;
+}
+
+
 
 void setPanelLed(uint8_t panel, uint8_t x, uint8_t y, bool state);
 bool getPanelLed(uint8_t panel, uint8_t x, uint8_t y);
@@ -21,7 +33,7 @@ void setNextledstate(uint8_t addr, uint8_t row, uint8_t col, boolean state)
     uint8_t tmpval = 0;
 
     // check boundaries
-    if (addr < 0 || addr > 24)
+    if (addr < 0 || addr > 4)
         return;
     if (row < 0 || row > 7)
         return;
@@ -45,7 +57,7 @@ boolean getNextledstate(uint8_t addr, uint8_t row, uint8_t col)
 {
     uint8_t tmpval = 0;
     // check boundaries
-    if (addr < 0 || addr > 24)
+    if (addr < 0 || addr > 4)
         return 0;
     if (row < 0 || row > 7)
         return 0;
@@ -173,16 +185,12 @@ void setup()
 #endif
   pinMode(6, INPUT);
   randomSeed(analogRead(6));
-  // allocate memory for nextState for 24 panels (8rows with 8bit (uint8_t) for each device)
-  // uint8_t ledstate[addr][row]
-  nextState = (uint8_t **)malloc(24 * sizeof(uint8_t *));
-  // if(ledstate == NULL) ... for now I will ignore this errorhandling
-  for (uint8_t i = 0; i < 24; i++)
+  nextState = (uint8_t **)malloc(4 * sizeof(uint8_t *));
+   for (uint8_t i = 0; i < 4; i++)
   {
     nextState[i] = (uint8_t *)malloc(8 * sizeof(uint8_t));
-    // if(ledstate[i] == NULL) ... for now I will ignore this errorhandling
   }
-
+  delay(100);
   for (int addr = 0; addr < devices; addr++)
   {
     matrix.setShutdown(addr, false);
@@ -192,20 +200,6 @@ void setup()
   matrix.show();
   newRound = 1;
 
-  // allocate memory for ledstate for numDevices (8rows with 8bit (uint8_t) for each device)
-  // uint8_t ledstate[addr][row]
-  nextState = (uint8_t **)malloc(matrix.getNumDevices() * sizeof(uint8_t *));
-  // if(ledstate == NULL) ... for now I will ignore this errorhandling
-  for (uint8_t i = 0; i < matrix.getNumDevices(); i++)
-  {
-    nextState[i] = (uint8_t *)malloc(8 * sizeof(uint8_t));
-    // if(ledstate[i] == NULL) ... for now I will ignore this errorhandling
-  }
-
-#ifdef DEBUG
-  Serial.print("2 ");
-  Serial.println(freeMemory());
-#endif
 #ifdef DEBUG
   Serial.println("setup end");
 #endif
@@ -213,14 +207,9 @@ void setup()
 
 void loop()
 {
-#ifdef DEBUG
-  Serial.print("3 ");
-  Serial.println(freeMemory());
-#endif
-
   if (newRound == 1)
   {
-    for (uint8_t p = 0; p < 6; p++)
+    for (uint8_t p = 0; p < 1; p++)
     {
       createRandomPanel(p);
 #ifdef DEBUG
@@ -229,41 +218,18 @@ void loop()
 #endif
     }
     newRound = 0;
+    matrix.show();
   }
   else
   {
     GoL();
-#ifdef DEBUG
-    Serial.print("5 ");
-    Serial.println(freeMemory());
-#endif
+    delay(1000000);
+    matrix.show();
   }
-  matrix.show();
-  delay(delayms);
-
-#ifdef DEBUG
-  Serial.print("6 ");
-  Serial.println(freeMemory());
-#endif
+  
+  
 }
 
-// A cube, each side (panel) has 4 matrices of 8x8 forming a 16x16 matrix
-// realised with 24 8x8 matrices, MAX 7219, daisychaned
-// cube panels:
-//    p4
-// p0 p1 p2 p3
-//    p5
-//
-// LED coordinates:
-// 6 panels with 16x16 LEDs
-// origin (0/0) is lower left on each panel
-//
-// each panel consits of 4 8x8 matrices daisychained:
-// |-> m2 -> m3 -> data out - 0/0 each bottom left
-// |-- m1 <- m0 <- data in  - 0/0 each top right
-// to physical coordinates
-// p0          p1          p2    .... p5
-// m0 m1 m2 m3 m4 m5 m6 m7 m8 m9 .... m20 m21 m22 m23
 void setPanelLed(uint8_t panel, uint8_t x, uint8_t y, bool state)
 {
   uint8_t width = 16;
@@ -377,7 +343,7 @@ void createRandomPanel(uint8_t panel)
   {
     for (uint8_t y = 0; y < 16; y++)
     {
-      if (random(100) < 60)
+      if (random(100) < 80)
         setPanelLed(panel, x, y, false);
       else
         setPanelLed(panel, x, y, true);
@@ -396,12 +362,13 @@ The rules for Conway's Game of Life are as follows:
 */
 void GoL()
 {
+  Serial.println("GoL start");
   uint8_t p = 0, x = 0, y = 0; // cell to be evaluated
   uint8_t n = 0;               // neighbours
-  uint8_t c = 0;               // c=true: live cell, false: dead cell
+  uint8_t c = 0, nc = 0;               // c= current, nc= nextGen; true: live cell, false: dead cell
 
   // count Neighbours and set cell for next generation
-  for (p = 0; p < 6; p++)
+  for (p = 0; p < 1; p++)
   {
     for (x = 0; x < 16; x++)
     {
@@ -413,25 +380,26 @@ void GoL()
         {
           if (n < 2 || n > 3)
           { // (a) or (c)
-            c = false;
+            nc = false;
           }
-          // else (b)
+          else{ nc=true;}
         }
         else
         {
           if (n == 3)
           { // (d)
-            c = true;
+            nc = true;
           }
-          // else (e)
+          else { nc= false;}
         }
-        setNextPanelLedState(p,x,y,c);
+        setNextPanelLedState(p,x,y,nc);
+        Serial.println(String(p)+"-"+String(x)+"-"+String(y)+"-"+String(c)+"-"+String(nc)+"-"+String(n));
       }
     }
   }
 
   // push next generation to panels
-  for (p = 0; p < 6; p++)
+  for (p = 0; p < 1; p++)
   {
     for (x = 0; x < 16; x++)
     {
