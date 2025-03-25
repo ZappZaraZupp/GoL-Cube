@@ -1,11 +1,11 @@
 /*
- *    MAX72xxMatrix.h
+ *    MAX72xxSPI.h
  *    Control chained 72xx
  *    02 2025 C. Pohl
  */
 
-#ifndef MAX72xxMatrix_h
-#define MAX72xxMatrix_h
+#ifndef MAX72xxSPI_h
+#define MAX72xxSPI_h
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -56,7 +56,7 @@
 // value 0x00 is normal operation+
 #define DISPLAYTEST 0x0f
 
-class MAX72xxMatrix
+class MAX72xxSPI
 {
 private:
     // data array packets (2*numDevices) 
@@ -80,8 +80,8 @@ public:
     // csPin		SPI_CS
     // clockPin		SPI_CLK
     // numDevices	chained devices
-    //MAX72xxMatrix(uint8_t dataPin, uint8_t csPin, uint8_t clkPin,  uint8_t numDevices = 1);
-    MAX72xxMatrix(uint8_t mosiPin, uint8_t misoPin, uint8_t csPin, uint8_t clkPin,  uint8_t numDevices = 1);
+    //MAX72xxSPI(uint8_t dataPin, uint8_t csPin, uint8_t clkPin,  uint8_t numDevices = 1);
+    MAX72xxSPI(uint8_t mosiPin, uint8_t misoPin, uint8_t csPin, uint8_t clkPin,  uint8_t numDevices = 1);
 
     // ** getNumDevices
     // Returns:
@@ -162,4 +162,4 @@ public:
     void show(void);
 };
 
-#endif // MAX72xxMatrix_h.h
+#endif // MAX72xxSPI_h.h
