@@ -75,6 +75,8 @@ ModuleCoordinates Cube2Module(CubeCoordinates c)
   return m;
 }
 
+// Convert Module Coordinates to Cube
+// not needed for now
 CubeCoordinates Module2Cube(ModuleCoordinates m)
 {
   CubeCoordinates c;

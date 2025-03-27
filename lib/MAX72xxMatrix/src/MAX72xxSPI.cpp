@@ -183,7 +183,7 @@ boolean MAX72xxSPI ::getLed(uint8_t addr, uint8_t row, uint8_t col)
         return 0;
 
     tmpval = 1 << col;
-    return (ledstate[addr][row] & (~tmpval));
+    return (ledstate[addr][row] & (tmpval));
 }
 
 // send *one* data packet (opcode and value) to addr
