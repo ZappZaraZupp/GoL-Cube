@@ -222,13 +222,16 @@ void MAX72xxSPI ::show()
 
     uint8_t datalen = numDevices * 2;
     uint8_t dataoff;
+    uint8_t storedRow,rotRow; // my LED displays have a column hickup... DP is 1st not last- Bits must be rotated one to the left
 
     for (uint8_t row = 0; row < 8; row++)
     {
         for (uint8_t addr = 0; addr < numDevices; addr++)
         {
             dataoff = addr * 2;
-            spidata[dataoff] = ledstate[addr][row]; // data
+            storedRow = ledstate[addr][row];
+            rotRow = (storedRow >> 1) | (storedRow << 7); // rotate Bits one to the left
+            spidata[dataoff] = rotRow; // data
             spidata[dataoff + 1] = row + 1;         // opcode row0=0x01 row1=0x02...
         }
         // send data

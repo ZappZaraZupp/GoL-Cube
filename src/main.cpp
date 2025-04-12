@@ -21,10 +21,9 @@ void setup()
   matrix.show();
   delay(100);
 
-  createPattern(0);
+  createPattern(3);
   matrix.show();
   delay(1000);
-
   Serial.println("setup end");
 }
 
