@@ -43,7 +43,7 @@ MAX72xxSPI ::MAX72xxSPI(uint8_t mosiPin, uint8_t misoPin, uint8_t csPin, uint8_t
     pinMode(SPI_CLK, OUTPUT);
 
     SPI.begin();
-    SPI.setClockDivider(SPI_CLOCK_DIV8);
+    SPI.setClockDivider(SPI_CLOCK_DIV128);
 
     for (uint8_t i = 0; i < numDevices; i++)
     {
