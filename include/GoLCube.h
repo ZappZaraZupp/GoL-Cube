@@ -303,24 +303,7 @@ void createPattern(uint8_t pat)
        0b1111111111111111,
        0b1111111111111111,
        0b1111111111111111,
-       0b1111111111111111},
-
-      {0b0000000000000000,
-       0b0000000000000000,
-       0b0000000000000000,
-       0b0000000000000000,
-       0b0000000000000000,
-       0b0000000000000000,
-       0b0000001110000000,
-       0b0000010010000000,
-       0b0000000010000000,
-       0b0000000000000000,
-       0b0000000000000000,
-       0b0000000000000000,
-       0b0000000000000000,
-       0b0000000000000000,
-       0b0000000000000000,
-       0b0000000000000000}};
+       0b1111111111111111}};
 
   bool v = 0;
 
@@ -364,11 +347,7 @@ void createRandomPattern(uint8_t limit = 30)
 }
 
 // panels are aranged
-// P5 P4
-//    P3
-//    P2
-//    P1 P0
-// each panel has 0/0 in the lower left
+// see PDF for details on this ;-)
 uint8_t countNeighbours(CubeCoordinates c)
 {
   uint8_t n = 0;                  // Number of live neighbours

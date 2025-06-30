@@ -206,7 +206,6 @@ void MAX72xxSPI ::spiSend(uint8_t addr, volatile uint8_t opcode, volatile uint8_
     // D11-D8 contain the register address (opcode) --> see header file
     // D7-D0 contain the data values
     for (uint8_t i = datalen; i > 0; i--)
-        //shiftOut(SPI_MOSI, SPI_CLK, MSBFIRST, spidata[i - 1]);
         SPI.transfer(spidata[i-1]);
     // The data is then latched into either the digit or
     // control registers on the rising edge of CS
@@ -239,7 +238,6 @@ void MAX72xxSPI ::show()
         for (uint8_t i = datalen; i > 0; i--)
         {
             SPI.transfer(spidata[i-1]);
-            //shiftOut(SPI_MOSI, SPI_CLK, MSBFIRST, spidata[i - 1]);
         }
         digitalWrite(SPI_CS, HIGH);
     }

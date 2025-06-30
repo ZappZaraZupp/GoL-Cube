@@ -20,15 +20,6 @@ void newCube()
     matrix.show();
     delay(80);
   }
-  for (uint8_t i = 0; i < 10; i++)
-  {
-    createPattern(3);
-    matrix.show();
-    delay(80);
-    createPattern(4);
-    matrix.show();
-    delay(80);
-  }
 
   createRandomPattern(30); // random patern
   matrix.show();

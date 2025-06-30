@@ -10,8 +10,9 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-// Register Address Map (D11 - D08)
+// Registers from datasheet
 
+// Register Address Map (D11 - D08)
 #define NOOP 0x00
 
 // Digits (Rows)
@@ -31,7 +32,6 @@
 // 0x83 (b10000011): decode digti 7,1,0, no decode 6,5,4,3,2
 // 0xff (b11111111): decode digits 0-7
 #define DECODEMODE 0x09 
-
 // Intensity: 16 values
 // 0xX0: min
 // ...
