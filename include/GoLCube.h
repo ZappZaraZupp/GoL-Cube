@@ -4,7 +4,7 @@
 
 MAX72xxSPI matrix = MAX72xxSPI(11, 12, 10, 13, 24); // OUT/MOSI, IN/MISO, CS, SCK, Number of modules
 
-uint8_t intensity = 6;
+
 struct CubeCoordinates
 {
   uint8_t panel;
@@ -303,7 +303,8 @@ void createPattern(uint8_t pat)
        0b1111111111111111,
        0b1111111111111111,
        0b1111111111111111,
-       0b1111111111111111}};
+       0b1111111111111111}
+      };
 
   bool v = 0;
 
@@ -320,10 +321,12 @@ void createPattern(uint8_t pat)
   }
 }
 
-void createRandomPattern(uint8_t limit = 30)
+void createRandomPattern()
 {
 
   bool v = 0;
+  uint16_t limit= 10 + (int)(analogRead(A3)/1023.0*80.0); // 10..90
+  //Serial.println(limit);
 
   for (uint8_t p = 0; p < 6; p++)
   {
@@ -517,12 +520,17 @@ uint8_t countNeighbours(CubeCoordinates c)
             cy = ix;
           }
         }
-        else
+        else if (ix>=0 && ix<=15 && iy>=0 && iy<=15)
         // inside panel
         {
           cp = c.panel;
           cx = ix;
           cy = iy;
+        }
+        else
+        // the corner - the non existing cell - nothing to count
+        {
+          continue;
         }
 
         if (getPanelLed(CubeCoordinates{.panel = cp, .x = cx, .y = cy}) == true)
