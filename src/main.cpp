@@ -81,8 +81,9 @@ void loop()
 {
   uint16_t changed = 0;
   intensity = getBrightness();
-  if (intensity != ointensity)
+  if (intensity != ointensity) // only if changed
   {
+    ointensity = intensity;
     for (int addr = 0; addr < matrix.getNumDevices(); addr++)
     {
       matrix.setIntensity(addr, intensity);
