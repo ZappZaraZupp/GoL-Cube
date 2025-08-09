@@ -4,7 +4,6 @@
 
 MAX72xxSPI matrix = MAX72xxSPI(11, 12, 10, 13, 24); // OUT/MOSI, IN/MISO, CS, SCK, Number of modules
 
-
 struct CubeCoordinates
 {
   uint8_t panel;
@@ -303,8 +302,7 @@ void createPattern(uint8_t pat)
        0b1111111111111111,
        0b1111111111111111,
        0b1111111111111111,
-       0b1111111111111111}
-      };
+       0b1111111111111111}};
 
   bool v = 0;
 
@@ -325,8 +323,8 @@ void createRandomPattern()
 {
 
   bool v = 0;
-  uint16_t limit= 10 + (int)(analogRead(A3)/1023.0*80.0); // 10..90
-  //Serial.println(limit);
+  uint16_t limit = 10 + (int)(analogRead(A3) / 1023.0 * 80.0); // 10..90
+  // Serial.println(limit);
 
   for (uint8_t p = 0; p < 6; p++)
   {
@@ -375,14 +373,14 @@ uint8_t countNeighbours(CubeCoordinates c)
           if (c.panel == 1)
           {
             cp = 5;
-            cx = 15;
-            cy = iy;
+            cx = 0;
+            cy = 15 - iy;
           }
           if (c.panel == 2)
           {
-            cp = 0;
-            cx = iy;
-            cy = 0;
+            cp = 4;
+            cx = 0;
+            cy = 15 - iy;
           }
           if (c.panel == 3)
           {
@@ -393,14 +391,14 @@ uint8_t countNeighbours(CubeCoordinates c)
           if (c.panel == 4)
           {
             cp = 2;
-            cx = 15;
-            cy = iy;
+            cx = 0;
+            cy = 15 - iy;
           }
           if (c.panel == 5)
           {
-            cp = 3;
-            cx = iy;
-            cy = 0;
+            cp = 1;
+            cx = 0;
+            cy = 15 - iy;
           }
         }
         else if (ix > 15 && (0 <= iy && iy <= 15))
@@ -414,14 +412,14 @@ uint8_t countNeighbours(CubeCoordinates c)
           if (c.panel == 1)
           {
             cp = 2;
-            cx = iy;
-            cy = 15;
+            cx = 15 - iy;
+            cy = 0;
           }
           if (c.panel == 2)
           {
-            cp = 4;
-            cx = 0;
-            cy = iy;
+            cp = 0;
+            cx = 15 - iy;
+            cy = 0;
           }
           if (c.panel == 3)
           {
@@ -432,14 +430,14 @@ uint8_t countNeighbours(CubeCoordinates c)
           if (c.panel == 4)
           {
             cp = 5;
-            cx = iy;
-            cy = 15;
+            cx = 15 - iy;
+            cy = 0;
           }
           if (c.panel == 5)
           {
-            cp = 1;
-            cx = 0;
-            cy = iy;
+            cp = 3;
+            cx = 15 - iy;
+            cy = 0;
           }
         }
         else if (iy < 0 && (0 <= ix && ix <= 15))
@@ -447,8 +445,8 @@ uint8_t countNeighbours(CubeCoordinates c)
           if (c.panel == 0)
           {
             cp = 2;
-            cx = 0;
-            cy = ix;
+            cx = 15;
+            cy = 15 - ix;
           }
           if (c.panel == 1)
           {
@@ -458,15 +456,15 @@ uint8_t countNeighbours(CubeCoordinates c)
           }
           if (c.panel == 2)
           {
-            cp = 3;
-            cx = ix;
-            cy = 15;
+            cp = 1;
+            cx = 15;
+            cy = 15 - ix;
           }
           if (c.panel == 3)
           {
             cp = 5;
-            cx = 0;
-            cy = ix;
+            cx = 15;
+            cy = 15 - ix;
           }
           if (c.panel == 4)
           {
@@ -476,9 +474,9 @@ uint8_t countNeighbours(CubeCoordinates c)
           }
           if (c.panel == 5)
           {
-            cp = 0;
-            cx = ix;
-            cy = 15;
+            cp = 4;
+            cx = 15;
+            cy = 15 - ix;
           }
         }
         else if (iy > 15 && (0 <= ix && ix <= 15))
@@ -486,8 +484,8 @@ uint8_t countNeighbours(CubeCoordinates c)
           if (c.panel == 0)
           {
             cp = 5;
-            cx = ix;
-            cy = 0;
+            cx = 15 - ix;
+            cy = 15;
           }
           if (c.panel == 1)
           {
@@ -497,15 +495,15 @@ uint8_t countNeighbours(CubeCoordinates c)
           }
           if (c.panel == 2)
           {
-            cp = 1;
-            cx = 15;
-            cy = ix;
+            cp = 3;
+            cx = 15 - ix;
+            cy = 15;
           }
           if (c.panel == 3)
           {
             cp = 2;
-            cx = ix;
-            cy = 0;
+            cx = 15 - ix;
+            cy = 15;
           }
           if (c.panel == 4)
           {
@@ -515,12 +513,12 @@ uint8_t countNeighbours(CubeCoordinates c)
           }
           if (c.panel == 5)
           {
-            cp = 4;
-            cx = 15;
-            cy = ix;
+            cp = 0;
+            cx = 15 - ix;
+            cy = 15;
           }
         }
-        else if (ix>=0 && ix<=15 && iy>=0 && iy<=15)
+        else if (ix >= 0 && ix <= 15 && iy >= 0 && iy <= 15)
         // inside panel
         {
           cp = c.panel;
